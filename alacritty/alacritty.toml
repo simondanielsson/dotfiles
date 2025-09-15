@@ -1,0 +1,65 @@
+import = [
+  # "~/.config/alacritty/catppuccin-mocha.toml"
+  "~/.config/alacritty/themes/themes/alabaster_dark.toml"
+]
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+startup_mode = "Maximized"
+decorations = "None"
+opacity = 0.90
+blur = true
+option_as_alt = "OnlyRight"
+
+[window.dimensions]
+columns = 200
+lines = 50
+
+[window.padding]
+x = 10
+y = 10
+
+[font]
+# size = 14
+# normal = { family = "FiraCode Nerd Font Mono", style = "Regular" }
+size = 16
+normal = { family = "Agave Nerd Font Mono", style = "Regular" }
+# normal = { family = "Source Code Pro", style = "Regular" }
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "V"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "C"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "Q"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "W"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u001BB"
+key = "Left"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001BF"
+key = "Right"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001B\u007F"
+key = "Backspace"
+mods = "Alt"
+
