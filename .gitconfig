@@ -1,0 +1,45 @@
+[core]
+  pager = delta
+  editor = nvim
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  navigate = true    # use n and N to move between diff sections
+  side-by-side = true
+  line-numbers = true
+
+[merge]
+  tool = nvimdiff4
+  conflictstyle = diff3
+
+[mergetool "nvimdiff4"]
+  cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[diff]
+  colorMoved = default
+
+[pull]
+  rebase = false
+
+[push]
+  autoSetupRemote = true
+
+[init]
+  defaultBranch = main
+[mergetool]
+	keepBackup = false
+
+[alias]
+  b=branch '--sort=-committerdate'
+  l=log
+  s=status
+  a=add
+  c=commit
+  d=diff
+  ds=diff '--staged'
+  pl=pull
+  ps=push
+  cp=cherry-pick
+
