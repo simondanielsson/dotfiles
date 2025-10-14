@@ -43,6 +43,25 @@ local plugins = {
       },
   },
   {
+    'milanglacier/minuet-ai.nvim',
+    lazy = false,
+    version = false,
+    config = function()
+        require('minuet').setup {
+          provider = 'openai',
+          model = "openai/gpt-4.1-mini",
+          virtualtext = {
+              auto_trigger_ft = {'*'},
+              auto_trigger_ignore_ft = {'.env', '.env*'},
+              keymap = {
+                  accept = '<C-y>',
+                  dismiss = '<A-e>',
+              },
+          },
+        }
+    end,
+  },
+  {
     "yetone/avante.nvim",
     -- event = "VeryLazy",
     lazy = true,
@@ -59,12 +78,15 @@ local plugins = {
     opts = {
       -- add any opts here
       -- for example
-      provider = "copilot",
-      copilot = {
-        model = "claude-3.7-sonnet",
-        temperature = 0,
-        max_tokens = 8192,
-        disable_tools = true,
+      provider = "openai",
+      providers = {
+        openai = {
+          model = "gpt-4.1-mini",
+          extra_request_body = {
+            temperature = 0,
+            max_tokens = 8192,
+          }
+        },
       },
       -- provider = "openai",
       -- openai = {
@@ -89,7 +111,7 @@ local plugins = {
       "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
       "ibhagwan/fzf-lua", -- for file_selector provider fzf
       "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      -- "zbirenbaum/copilot.lua", -- for providers='copilot'
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
@@ -382,6 +404,8 @@ local plugins = {
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
+    -- TODO: DISABLED FOR NOW
+    enabled = false,
     event = "InsertEnter",
     config = function()
       require('copilot').setup({
