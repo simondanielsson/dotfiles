@@ -19,3 +19,10 @@ curl -LO https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-macos-a
 sudo rm -rf /opt/nvim-macos-arm64
 sudo tar -C /opt -xzf nvim-macos-arm64.tar.gz
 ```
+
+and add it to your `PATH`
+
+```bash
+export PATH="$PATH:/opt/nvim-linux64/bin"
+```
+
