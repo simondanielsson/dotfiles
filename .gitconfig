@@ -1,3 +1,8 @@
+[user]
+	email = danielsson.simon@bcg.com
+	name = danielssonsimon
+  username = danielssonsimon
+
 [core]
   pager = delta
   editor = nvim
@@ -42,4 +47,3 @@
   pl=pull
   ps=push
   cp=cherry-pick
-
