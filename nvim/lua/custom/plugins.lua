@@ -69,6 +69,8 @@ local plugins = {
     'milanglacier/minuet-ai.nvim',
     lazy = false,
     version = false,
+    -- TODO: enable if copilot not used
+    enabled = false,
     config = function()
         require('minuet').setup {
           provider = 'openai',
@@ -427,8 +429,7 @@ local plugins = {
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
-    -- TODO: DISABLED FOR NOW
-    enabled = false,
+    enabled = true,
     event = "InsertEnter",
     config = function()
       require('copilot').setup({
