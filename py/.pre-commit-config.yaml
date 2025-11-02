@@ -82,10 +82,14 @@ repos:
       - id: rest-docstring-checker
         args: ["--strict"]
         exclude: ^api/utils/llm\.py$
-  - repo: https://github.com/andrei-shabanski/poetry-plugin-sort
-    rev: v0.2.1
+  # - repo: https://github.com/andrei-shabanski/poetry-plugin-sort
+  #   rev: v0.2.1
+  #   hooks:
+  #     - id: poetry-sort
+  - repo: https://github.com/ninoseki/uv-sort
+    rev: "v0.6.1" # Use the sha / tag you want to point at
     hooks:
-      - id: poetry-sort
+      - id: uv-sort
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.17.0
     hooks:
