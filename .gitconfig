@@ -4,7 +4,7 @@
   username = danielssonsimon
 
 [core]
-  pager = delta
+  pager = less -FRSX
   editor = nvim
 
 [interactive]
@@ -23,6 +23,8 @@
   cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 
 [diff]
+  # Install with https://dandavison.github.io/delta/installation.html
+  pager = delta
   colorMoved = default
 
 [pull]
