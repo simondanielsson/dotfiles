@@ -40,7 +40,7 @@
 
 [alias]
   b=branch '--sort=-committerdate'
-  l=log
+  l=log '--oneline'
   s=status
   a=add
   c=commit
