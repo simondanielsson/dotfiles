@@ -10,7 +10,7 @@
 local signs = { Error = "󰅙", Warn = "", Info = "󰋼", Hint = "󰌵" }
 
 vim.diagnostic.config({
-  virtual_text = { prefix = "" },
+  virtual_text = { prefix = "", virtual_text = True }, -- TODO: do we want virtual text?
   signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = signs.Error,
@@ -74,6 +74,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     bmap("n", "<leader>wl", function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, "List workspace folders")
+
+    -- LSP semantic tokens are enabled — they layer on top of treesitter
+    -- highlights and provide more accurate coloring (e.g. distinguishing
+    -- parameters from local variables). The @lsp.type.* groups link to
+    -- treesitter groups by default, so the colorscheme only needs to
+    -- define the treesitter groups to cover both.
   end,
 })
 

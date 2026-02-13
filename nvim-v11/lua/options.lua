@@ -60,5 +60,4 @@ end
 local is_windows = vim.fn.has("win32") ~= 0
 vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin" .. (is_windows and ";" or ":") .. vim.env.PATH
 
--- Colorscheme (NvChad nightowl, standalone — colors/nightowl-nvchad.lua)
--- vim.cmd.colorscheme("nightowl-nvchad")
+vim.cmd.colorscheme("nightowl-nvchad")

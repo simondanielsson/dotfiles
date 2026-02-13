@@ -6,16 +6,46 @@ return {
   { "nvim-lua/plenary.nvim", lazy = false },
 
   -- Theme
-  {
-    "oxfist/night-owl.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("night-owl").setup({ transparent_background = true })
-      vim.cmd.colorscheme("night-owl")
-      vim.api.nvim_set_hl(0, "LineNr", { fg = "gray" })
-    end,
-  },
+  -- {
+  --   "oxfist/night-owl.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require("night-owl").setup({ transparent_background = true })
+  --     vim.cmd.colorscheme("night-owl")
+  --     vim.api.nvim_set_hl(0, "LineNr", { fg = "gray" })
+  --
+  --     -- Supplement night-owl with treesitter groups it doesn't define.
+  --     -- LSP semantic tokens (@lsp.type.*) automatically inherit from these
+  --     -- via Neovim's built-in fallback links.
+  --     -- local hi = vim.api.nvim_set_hl
+  --     -- hi(0, "@variable.parameter",    { fg = "#FFAD60" })  -- orange
+  --     -- hi(0, "@keyword.return",        { fg = "#aad2ff" })  -- cyan
+  --     -- hi(0, "@keyword.conditional",   { fg = "#aad2ff" })  -- cyan
+  --     -- hi(0, "@keyword.exception",     { fg = "#ecc48d" })  -- amber
+  --     -- hi(0, "@constructor",           { fg = "#aad2ff" })  -- cyan
+  --     -- hi(0, "@module",                { fg = "#ecc48d" })  -- amber
+  --     -- hi(0, "@variable.member",       { fg = "#ecc48d" })  -- amber
+  --     -- hi(0, "@property",              { fg = "#ecc48d" })  -- amber
+  --     -- hi(0, "@constant.builtin",      { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@variable.builtin",      { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@number.float",          { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@punctuation.bracket",   { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@punctuation.delimiter", { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@tag.delimiter",         { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@string.escape",         { fg = "#aad2ff" })  -- cyan
+  --     -- hi(0, "@string.regex",          { fg = "#aad2ff" })  -- cyan
+  --     -- hi(0, "@annotation",            { fg = "#f78c6c" })  -- orange-red
+  --     -- hi(0, "@attribute",             { fg = "#c792ea" })  -- purple
+  --     -- hi(0, "@function.call",         { fg = "#82aaff" })  -- blue
+  --     -- hi(0, "@function.method.call",  { fg = "#82aaff" })  -- blue
+  --     -- hi(0, "@keyword.operator",      { fg = "#c792ea" })  -- purple
+  --     -- hi(0, "@keyword.import",        { fg = "#82aaff" })  -- blue
+  --     -- hi(0, "@comment",               { fg = "#34495a", italic = true })  -- grey
+  --     -- hi(0, "@diff.plus",             { fg = "#29E68E" })  -- green
+  --     -- hi(0, "@diff.minus",            { fg = "#f78c6c" })  -- red
+  --   end,
+  -- },
 
   -- Statusline 
   {
@@ -148,6 +178,11 @@ return {
     cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
     build = ":TSUpdate",
     config = function()
+      -- The new nvim-treesitter stores highlight queries in a runtime/
+      -- subdirectory. lazy.nvim only adds the plugin root to rtp, so
+      -- Neovim can't find them. This one line is critical:
+      vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/runtime")
+
       require("nvim-treesitter").setup({
         ensure_installed = {
           "lua", "vim", "vimdoc", "query",
@@ -244,7 +279,7 @@ return {
       })
       -- Custom command to install all listed binaries
       local ensure_installed = {
-        "debugpy", "black", "mypy", "ruff",
+        "debugpy", "black", "mypy", "ruff", "pyrefly",
         "gopls",
         "html-lsp", "css-lsp", "cssmodules-language-server",
         "svelte-language-server", "tailwindcss-language-server",
@@ -968,3 +1003,5 @@ return {
     opts = {},
   },
 }
+
+

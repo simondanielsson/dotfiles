@@ -245,6 +245,32 @@ hi("@markup.italic",           { italic = true })
 hi("@markup.strikethrough",    { strikethrough = true })
 hi("@markup.quote",            { bg = c.black2 })
 
+-- ── LSP semantic tokens ──────────────────────────────────────
+-- These @lsp.type.* groups are applied by LSP servers (e.g. pyrefly) and
+-- take priority over treesitter groups. We link them to the matching
+-- treesitter groups so they inherit the same colors.
+
+hi("@lsp.type.class",          { link = "Structure" })
+hi("@lsp.type.decorator",      { link = "@function" })
+hi("@lsp.type.enum",           { link = "Type" })
+hi("@lsp.type.enumMember",     { link = "Constant" })
+hi("@lsp.type.function",       { link = "@function" })
+hi("@lsp.type.interface",      { link = "Structure" })
+hi("@lsp.type.macro",          { link = "Macro" })
+hi("@lsp.type.method",         { link = "@function" })
+hi("@lsp.type.namespace",      { link = "@module" })
+hi("@lsp.type.parameter",      { link = "@variable.parameter" })
+hi("@lsp.type.property",       { link = "@property" })
+hi("@lsp.type.struct",         { link = "Structure" })
+hi("@lsp.type.type",           { link = "Type" })
+hi("@lsp.type.typeParameter",  { link = "Typedef" })
+hi("@lsp.type.variable",       { link = "@variable" })
+hi("@lsp.type.keyword",        { link = "@keyword" })
+hi("@lsp.type.string",         { link = "@string" })
+hi("@lsp.type.number",         { link = "Number" })
+hi("@lsp.type.operator",       { link = "@operator" })
+hi("@lsp.type.comment",        { link = "@comment" })
+
 -- ── LSP diagnostics ──────────────────────────────────────────
 
 hi("DiagnosticHint",           { fg = c.purple })
