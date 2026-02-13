@@ -7,7 +7,16 @@
 -- ╰──────────────────────────────────────────────────────────╯
 
 -- ── Disable inlay hints globally ─────────────────────────────
+-- Pyrefly aggressively re-enables inlay hints on various events
+-- (save, LSP restart, debugger launch, etc.). This timer-based
+-- approach catches all of them by polling every 500ms.
 vim.lsp.inlay_hint.enable(false)
+local inlay_timer = vim.uv.new_timer()
+inlay_timer:start(0, 500, vim.schedule_wrap(function()
+  if vim.lsp.inlay_hint.is_enabled() then
+    vim.lsp.inlay_hint.enable(false)
+  end
+end))
 
 -- ── Diagnostic appearance ────────────────────────────────────
 local signs = { Error = "󰅙", Warn = "", Info = "󰋼", Hint = "󰌵" }

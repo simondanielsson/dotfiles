@@ -678,6 +678,17 @@ return {
         print("Loaded launch.json configurations")
       end, { desc = "Load launch.json" })
 
+      -- Wrap dap.run to always inject cwd into launch configs.
+      -- Without this, debugpy defaults cwd to the directory of "program"
+      -- (e.g. venv/bin/), breaking relative paths in args and code.
+      local original_run = dap.run
+      dap.run = function(config, opts)
+        if config.request == "launch" and (not config.cwd or config.cwd == "") then
+          config.cwd = vim.fn.getcwd()
+        end
+        return original_run(config, opts)
+      end
+
       -- Visuals
       vim.fn.sign_define("DapBreakpoint", { text = "🛑", texthl = "", linehl = "", numhl = "" })
       dap.defaults.fallback.focus_terminal = true
