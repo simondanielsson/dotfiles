@@ -70,7 +70,7 @@ end
 -- ── Editor defaults ──────────────────────────────────────────
 
 hi("Normal",        { fg = b.base05, bg = "NONE" }) -- transparent background
-hi("NormalFloat",   { bg = c.darker_black })
+hi("NormalFloat",   { bg = "NONE" })
 hi("Bold",          { bold = true })
 hi("Italic",        { italic = true })
 hi("Cursor",        { fg = b.base00, bg = b.base05 })
@@ -131,6 +131,13 @@ hi("SpellRare",     { undercurl = true, sp = b.base0E })
 
 -- QuickFix
 hi("QuickFixLine",  { bg = b.base01 })
+
+-- Statusline & Tabline backgrounds
+hi("StatusLine",    { fg = c.white, bg = c.statusline_bg })
+hi("StatusLineNC",  { fg = c.light_grey, bg = c.statusline_bg })
+hi("TabLine",       { fg = c.light_grey, bg = c.statusline_bg })
+hi("TabLineFill",   { bg = c.darker_black })
+hi("TabLineSel",    { fg = c.white, bg = c.black })
 
 -- Misc
 hi("NvimInternalError", { fg = c.red })
@@ -315,18 +322,18 @@ hi("GitSignsDelete",           { fg = c.red })
 
 -- ── nvim-cmp ─────────────────────────────────────────────────
 
-hi("CmpPmenu",                 { bg = c.darker_black })
+hi("CmpPmenu",                 { bg = "NONE" })
 hi("CmpSel",                   { fg = c.black, bg = c.blue, bold = true })
 hi("CmpBorder",                { fg = c.grey })
-hi("CmpDoc",                   { bg = c.darker_black })
+hi("CmpDoc",                   { bg = "NONE" })
 hi("CmpDocBorder",             { fg = c.grey })
 
 -- ── Telescope ────────────────────────────────────────────────
 
-hi("TelescopeNormal",          { bg = c.darker_black })
+hi("TelescopeNormal",          { bg = "NONE" })
 hi("TelescopeBorder",          { fg = c.grey })
 hi("TelescopePromptBorder",    { fg = c.blue })
-hi("TelescopePromptNormal",    { bg = c.darker_black })
+hi("TelescopePromptNormal",    { bg = "NONE" })
 hi("TelescopeResultsTitle",    { fg = c.black, bg = c.green })
 hi("TelescopePromptTitle",     { fg = c.black, bg = c.blue })
 hi("TelescopePreviewTitle",    { fg = c.black, bg = c.green })
@@ -334,9 +341,9 @@ hi("TelescopeSelection",       { fg = c.white, bg = c.one_bg })
 
 -- ── NvimTree ─────────────────────────────────────────────────
 
-hi("NvimTreeNormal",           { bg = c.darker_black })
-hi("NvimTreeNormalNC",         { bg = c.darker_black })
-hi("NvimTreeWinSeparator",     { fg = c.darker_black, bg = c.darker_black })
+hi("NvimTreeNormal",           { bg = "NONE" })
+hi("NvimTreeNormalNC",         { bg = "NONE" })
+hi("NvimTreeWinSeparator",     { fg = c.line, bg = "NONE" })
 hi("NvimTreeCursorLine",       { bg = c.black2 })
 hi("NvimTreeIndentMarker",     { fg = c.grey })
 hi("NvimTreeGitNew",           { fg = c.green })

@@ -53,9 +53,48 @@ return {
     lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      -- Custom nightowl lualine theme (dark bg, colored accents)
+      local nightowl_lualine = {
+        normal = {
+          a = { fg = "#011627", bg = "#82aaff", gui = "bold" },  -- blue
+          b = { fg = "#d6deeb", bg = "#1a2f40" },                -- lightbg
+          c = { fg = "#d6deeb", bg = "#051a2b" },                -- statusline_bg
+        },
+        insert = {
+          a = { fg = "#011627", bg = "#29E68E", gui = "bold" },  -- green
+          b = { fg = "#d6deeb", bg = "#1a2f40" },
+          c = { fg = "#d6deeb", bg = "#051a2b" },
+        },
+        visual = {
+          a = { fg = "#011627", bg = "#c792ea", gui = "bold" },  -- purple
+          b = { fg = "#d6deeb", bg = "#1a2f40" },
+          c = { fg = "#d6deeb", bg = "#051a2b" },
+        },
+        replace = {
+          a = { fg = "#011627", bg = "#f78c6c", gui = "bold" },  -- red/orange
+          b = { fg = "#d6deeb", bg = "#1a2f40" },
+          c = { fg = "#d6deeb", bg = "#051a2b" },
+        },
+        command = {
+          a = { fg = "#011627", bg = "#ffcb8b", gui = "bold" },  -- yellow
+          b = { fg = "#d6deeb", bg = "#1a2f40" },
+          c = { fg = "#d6deeb", bg = "#051a2b" },
+        },
+        terminal = {
+          a = { fg = "#011627", bg = "#29E68E", gui = "bold" },  -- green
+          b = { fg = "#d6deeb", bg = "#1a2f40" },
+          c = { fg = "#d6deeb", bg = "#051a2b" },
+        },
+        inactive = {
+          a = { fg = "#495e6f", bg = "#051a2b" },
+          b = { fg = "#495e6f", bg = "#051a2b" },
+          c = { fg = "#495e6f", bg = "#051a2b" },
+        },
+      }
+
       require("lualine").setup({
         options = {
-          theme = "auto",
+          theme = nightowl_lualine,
           globalstatus = true,
           component_separators = { left = "", right = "" },
           section_separators = { left = "", right = "" },
@@ -96,17 +135,45 @@ return {
     lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      local bg_dark  = "#010f20"  -- c.darker_black
+      local bg_fill  = "#011627"  -- c.black
+      local bg_sel   = "#091e2f"  -- c.black2
+      local fg_dim   = "#495e6f"  -- c.light_grey
+      local fg_norm  = "#d6deeb"  -- c.white
+      local sep      = "#182d3e"  -- c.line
+
       require("bufferline").setup({
         options = {
           close_command = "bdelete! %d",
           right_mouse_command = "bdelete! %d",
           offsets = {
-            { filetype = "NvimTree", text = "File Explorer", highlight = "Directory", separator = true },
+            { filetype = "NvimTree", text = "", separator = true },
           },
           show_buffer_icons = true,
           show_buffer_close_icons = false,
           separator_style = "thin",
-          always_show_bufferline = true,
+          always_show_bufferline = false,
+        },
+        highlights = {
+          fill            = { bg = bg_dark },
+          background      = { fg = fg_dim, bg = bg_fill },
+          buffer_visible  = { fg = fg_dim, bg = bg_fill },
+          buffer_selected = { fg = fg_norm, bg = bg_sel, bold = true, italic = false },
+          separator           = { fg = sep, bg = bg_fill },
+          separator_visible   = { fg = sep, bg = bg_fill },
+          separator_selected  = { fg = sep, bg = bg_sel },
+          close_button           = { fg = fg_dim, bg = bg_fill },
+          close_button_visible   = { fg = fg_dim, bg = bg_fill },
+          close_button_selected  = { fg = fg_norm, bg = bg_sel },
+          tab              = { fg = fg_dim, bg = bg_fill },
+          tab_selected     = { fg = fg_norm, bg = bg_sel },
+          tab_close        = { fg = fg_dim, bg = bg_dark },
+          modified              = { fg = fg_dim, bg = bg_fill },
+          modified_visible      = { fg = fg_dim, bg = bg_fill },
+          modified_selected     = { fg = fg_norm, bg = bg_sel },
+          indicator_visible     = { fg = bg_fill, bg = bg_fill },
+          indicator_selected    = { fg = "#82aaff", bg = bg_sel },
+          offset_separator      = { fg = sep, bg = bg_dark },
         },
       })
     end,

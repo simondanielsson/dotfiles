@@ -12,4 +12,16 @@ return {
     },
     ".git",
   },
+  settings = {
+    pyrefly = {
+      inlayHints = false,
+    },
+  },
+  capabilities = {
+    textDocument = {
+      inlayHint = {
+        dynamicRegistration = false,
+      },
+    },
+  },
 }

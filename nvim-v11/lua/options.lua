@@ -30,7 +30,7 @@ opt.number = true
 opt.numberwidth = 2
 opt.relativenumber = true
 opt.ruler = false
-opt.shortmess:append("sI")
+opt.shortmess:append("s")
 opt.signcolumn = "yes"
 opt.splitbelow = true
 opt.splitright = true

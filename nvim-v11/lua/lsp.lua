@@ -6,6 +6,9 @@
 -- │  Neovim auto-discovers them.                             │
 -- ╰──────────────────────────────────────────────────────────╯
 
+-- ── Disable inlay hints globally ─────────────────────────────
+vim.lsp.inlay_hint.enable(false)
+
 -- ── Diagnostic appearance ────────────────────────────────────
 local signs = { Error = "󰅙", Warn = "", Info = "󰋼", Hint = "󰌵" }
 
@@ -40,6 +43,9 @@ capabilities.textDocument.completion.completionItem = {
     properties = { "documentation", "detail", "additionalTextEdits" },
   },
 }
+
+-- Tell all LSP servers the client does NOT support inlay hints
+capabilities.textDocument.inlayHint = nil
 
 -- Apply to every server via the wildcard
 vim.lsp.config("*", {
