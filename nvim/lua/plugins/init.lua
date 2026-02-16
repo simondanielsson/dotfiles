@@ -924,74 +924,56 @@ return {
     },
   },
 
-  {
-    "milanglacier/minuet-ai.nvim",
-    lazy = false,
-    version = false,
-    enabled = false, -- disabled (enable if copilot not used)
-    config = function()
-      require("minuet").setup({
-        provider = "openai",
-        model = "openai/gpt-4.1-mini",
-        virtualtext = {
-          auto_trigger_ft = { "*" },
-          auto_trigger_ignore_ft = { ".env", ".env*" },
-          keymap = { accept = "<C-y>", dismiss = "<A-e>" },
-        },
-      })
-    end,
-  },
-
-  {
-    "yetone/avante.nvim",
-    lazy = true,
-    keys = {
-      {
-        "<leader>as",
-        function() require("avante.api").ask() end,
-        desc = "Start and ask Avante",
-      },
-    },
-    version = false,
-    opts = {
-      provider = "openai",
-      providers = {
-        openai = {
-          model = "gpt-4.1-mini",
-          extra_request_body = { temperature = 0, max_tokens = 8192 },
-        },
-      },
-    },
-    build = "make",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "stevearc/dressing.nvim",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "echasnovski/mini.pick",
-      "nvim-telescope/telescope.nvim",
-      "hrsh7th/nvim-cmp",
-      "ibhagwan/fzf-lua",
-      "nvim-tree/nvim-web-devicons",
-      {
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
-        opts = {
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = { insert_mode = true },
-            use_absolute_path = true,
-          },
-        },
-      },
-      {
-        "MeanderingProgrammer/render-markdown.nvim",
-        opts = { file_types = { "markdown", "Avante" } },
-        ft = { "markdown", "Avante" },
-      },
-    },
-  },
+  -- {
+  --   "yetone/avante.nvim",
+  --   lazy = true,
+  --   keys = {
+  --     {
+  --       "<leader>as",
+  --       function() require("avante.api").ask() end,
+  --       desc = "Start and ask Avante",
+  --     },
+  --   },
+  --   version = false,
+  --   opts = {
+  --     provider = "openai",
+  --     providers = {
+  --       openai = {
+  --         model = "gpt-4.1-mini",
+  --         extra_request_body = { temperature = 0, max_tokens = 8192 },
+  --       },
+  --     },
+  --   },
+  --   build = "make",
+  --   dependencies = {
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "stevearc/dressing.nvim",
+  --     "nvim-lua/plenary.nvim",
+  --     "MunifTanjim/nui.nvim",
+  --     "echasnovski/mini.pick",
+  --     "nvim-telescope/telescope.nvim",
+  --     "hrsh7th/nvim-cmp",
+  --     "ibhagwan/fzf-lua",
+  --     "nvim-tree/nvim-web-devicons",
+  --     {
+  --       "HakonHarnes/img-clip.nvim",
+  --       event = "VeryLazy",
+  --       opts = {
+  --         default = {
+  --           embed_image_as_base64 = false,
+  --           prompt_for_file_name = false,
+  --           drag_and_drop = { insert_mode = true },
+  --           use_absolute_path = true,
+  --         },
+  --       },
+  --     },
+  --     {
+  --       "MeanderingProgrammer/render-markdown.nvim",
+  --       opts = { file_types = { "markdown", "Avante" } },
+  --       ft = { "markdown", "Avante" },
+  --     },
+  --   },
+  -- },
 
   -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   --  Language-specific
@@ -1036,49 +1018,6 @@ return {
     "evanleck/vim-svelte",
     ft = { "svelte", "js", "ts", "javascript", "typescript" },
     dependencies = { "pangloss/vim-javascript", "othree/html5.vim" },
-  },
-
-  -- Custom local plugin
-  {
-    name = "nvim-pandas",
-    dir = "~/projects/nvim-pandas.nvim",
-    dependencies = { "mfussenegger/nvim-dap" },
-    lazy = false,
-    config = function(_, opts)
-      require("nvim-pandas").setup(opts)
-    end,
-  },
-
-  -- Leetcode
-  {
-    "kawre/leetcode.nvim",
-    build = ":TSUpdate html",
-    cmd = "Leet",
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-      "ibhagwan/fzf-lua",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-    opts = {
-      lang = "python3",
-      keys = {
-        toggle = { "q" },
-        confirm = { "<CR>" },
-        reset_testcases = "r",
-        use_testcase = "U",
-        focus_testcases = "H",
-        focus_result = "L",
-      },
-    },
-  },
-
-  -- Remote SSH
-  {
-    "nosduco/remote-sshfs.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-    lazy = true,
-    opts = {},
   },
 }
 
