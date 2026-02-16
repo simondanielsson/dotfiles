@@ -371,11 +371,25 @@ return {
     ft = { "python", "go", "javascript", "typescript", "svelte", "html", "css", "ocaml" },
     config = function()
       local null_ls = require("null-ls")
+      local helpers = require("null-ls.helpers")
       local augroup = vim.api.nvim_create_augroup("LspFormatting", { clear = true })
+
+      local ruff_isort = {
+        name = "ruff_isort",
+        method = null_ls.methods.FORMATTING,
+        filetypes = { "python" },
+        generator = helpers.formatter_factory({
+          command = "ruff",
+          args = { "check", "--fix", "--select", "I", "-q", "$FILENAME" },
+          to_temp_file = true,
+        }),
+      }
+
       null_ls.setup({
         sources = {
           -- Python
           null_ls.builtins.formatting.black,
+          ruff_isort,
           null_ls.builtins.diagnostics.mypy.with({
             extra_args = function()
               local virtual = os.getenv("VIRTUAL_ENV") or os.getenv("CONDA_PREFIX") or "/usr"
