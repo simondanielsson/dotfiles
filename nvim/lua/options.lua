@@ -49,7 +49,7 @@ opt.whichwrap:append("<>[]hl")
 opt.spell = true
 
 -- Terminal
-g.terminal_emulator = "iTerm.app"
+g.terminal_emulator = "Alacritty.app"
 
 -- Disable some default providers
 for _, provider in ipairs({ "node", "perl", "python3", "ruby" }) do

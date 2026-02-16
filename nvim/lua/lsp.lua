@@ -22,7 +22,7 @@ end))
 local signs = { Error = "󰅙", Warn = "", Info = "󰋼", Hint = "󰌵" }
 
 vim.diagnostic.config({
-  virtual_text = { prefix = "", virtual_text = True }, -- TODO: do we want virtual text?
+  virtual_text = { prefix = "", virtual_text = true },
   signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = signs.Error,
@@ -101,7 +101,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 -- ── Enable LSP servers ───────────────────────────────────────
 -- Each name matches a file in lsp/<name>.lua
 vim.lsp.enable({
-  "pyrefly",              -- Python  (was pyright)
+  "pyrefly",              -- Python
   "gopls",                -- Go
   "html",                 -- HTML
   "cssls",                -- CSS
