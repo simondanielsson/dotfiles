@@ -63,6 +63,12 @@ if vim.wo.diff then
   map("n", "gä", "<cmd>diffget REMOTE<CR>", { desc = "Choose theirs" })
 end
 
+-- Jump to first merge conflict marker
+map("n", "<leader>mc", function()
+  vim.fn.setreg("/", [[\V<<<<<<<]])
+  vim.cmd("normal! n")
+end, { desc = "Find merge conflict marker" })
+
 -- ── Terminal mode ────────────────────────────────────────────
 map("t", "<C-x>", vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, true, true), { desc = "Escape terminal" })
 
