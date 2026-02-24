@@ -113,6 +113,7 @@ vim.lsp.enable({
   "svelte",               -- Svelte
   "ocamllsp",             -- OCaml
   "lua_ls",               -- Lua
+  "marksman",             -- Markdown
 })
 
 -- Re-trigger FileType for the initial buffer (FileType fires before this runs)
