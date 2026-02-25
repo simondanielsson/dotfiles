@@ -41,7 +41,7 @@
 [alias]
   b=branch '--sort=-committerdate'
   l=log '--oneline'
-  s=status
+  s=status '--short'
   a=add
   c=commit
   d=diff
