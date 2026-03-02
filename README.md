@@ -9,4 +9,5 @@ These are my dotfiles. Feel free to use whatever you want.
 # docker run -it ubuntu:24.04 bash
 apt-get update && apt-get install -y curl sudo
 curl -fsSL https://raw.githubusercontent.com/simondanielsson/dotfiles/main/install.sh | bash
+source $HOME/.local/bin/env
 ```

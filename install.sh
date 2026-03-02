@@ -106,6 +106,7 @@ fi
 if ! command_exists uv; then
   info "Installing uv..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
+  source $HOME/.local/bin/env
   ok "uv installed"
 else
   ok "uv already installed"
