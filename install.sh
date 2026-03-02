@@ -20,7 +20,7 @@ command_exists() { command -v "$1" &>/dev/null; }
 ARCH=$(uname -m)
 case "$ARCH" in
   x86_64)  DEB_ARCH="amd64"; NVIM_ARCH="x86_64" ;;
-  aarch64) DEB_ARCH="arm64"; NVIM_ARCH="aarch64" ;;
+  aarch64) DEB_ARCH="arm64"; NVIM_ARCH="arm64" ;;
   armv7l)  DEB_ARCH="armhf"; NVIM_ARCH="armv7l" ;;
   *) err "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
