@@ -89,7 +89,12 @@ NVIM_INSTALL_DIR="$HOME/nvim-0.11"
 if [ ! -d "$NVIM_INSTALL_DIR" ]; then
   info "Installing Neovim ${NVIM_VERSION}..."
   NVIM_TARBALL="nvim-linux-${NVIM_ARCH}.tar.gz"
-  wget -q "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_TARBALL}" -O "/tmp/${NVIM_TARBALL}"
+  NVIM_URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_TARBALL}"
+  info "  Downloading ${NVIM_URL}"
+  if ! wget "${NVIM_URL}" -O "/tmp/${NVIM_TARBALL}"; then
+    err "Failed to download Neovim from ${NVIM_URL}"
+    exit 1
+  fi
   mkdir -p "$NVIM_INSTALL_DIR"
   tar -xzf "/tmp/${NVIM_TARBALL}" --strip-components=1 -C "$NVIM_INSTALL_DIR"
   rm -f "/tmp/${NVIM_TARBALL}"
