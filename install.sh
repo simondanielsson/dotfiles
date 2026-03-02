@@ -17,6 +17,14 @@ err()   { printf '\033[1;31m[ERR]\033[0m   %s\n' "$*"; }
 
 command_exists() { command -v "$1" &>/dev/null; }
 
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64)  DEB_ARCH="amd64"; NVIM_ARCH="x86_64" ;;
+  aarch64) DEB_ARCH="arm64"; NVIM_ARCH="aarch64" ;;
+  armv7l)  DEB_ARCH="armhf"; NVIM_ARCH="armv7l" ;;
+  *) err "Unsupported architecture: $ARCH"; exit 1 ;;
+esac
+
 # System packages
 info "Updating apt and installing system packages..."
 sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
@@ -68,7 +76,7 @@ fi
 if ! command_exists delta; then
   info "Installing git-delta..."
   DELTA_VERSION=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-  DELTA_DEB="git-delta_${DELTA_VERSION}_amd64.deb"
+  DELTA_DEB="git-delta_${DELTA_VERSION}_${DEB_ARCH}.deb"
   wget -q "https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/${DELTA_DEB}" -O "/tmp/${DELTA_DEB}"
   sudo dpkg -i "/tmp/${DELTA_DEB}"
   rm -f "/tmp/${DELTA_DEB}"
@@ -80,7 +88,7 @@ fi
 NVIM_INSTALL_DIR="$HOME/nvim-0.11"
 if [ ! -d "$NVIM_INSTALL_DIR" ]; then
   info "Installing Neovim ${NVIM_VERSION}..."
-  NVIM_TARBALL="nvim-linux-x86_64.tar.gz"
+  NVIM_TARBALL="nvim-linux-${NVIM_ARCH}.tar.gz"
   wget -q "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_TARBALL}" -O "/tmp/${NVIM_TARBALL}"
   mkdir -p "$NVIM_INSTALL_DIR"
   tar -xzf "/tmp/${NVIM_TARBALL}" --strip-components=1 -C "$NVIM_INSTALL_DIR"
