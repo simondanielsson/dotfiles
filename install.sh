@@ -35,7 +35,9 @@ sudo apt-get install -y -qq \
   ripgrep fd-find bat fzf \
   python3 python3-pip python3-venv \
   cmake gettext \
-  gpg # for eza
+  fontconfig \
+  gpg \
+  ncurses-term # provides tmux-256color terminfo for truecolor support
 
 if command_exists batcat && ! command_exists bat; then
   sudo ln -sf "$(which batcat)" /usr/local/bin/bat
