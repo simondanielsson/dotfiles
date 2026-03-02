@@ -47,6 +47,11 @@ alias cat=bat
 alias ls=eza
 alias getsha='git rev-parse --short HEAD'
 
+## ensure nvim 0.11 is on PATH:
+export PATH="$HOME/nvim-0.11/bin:$PATH"
+
+autoload -U +X bashcompinit && bashcompinit
+
 # Keybinds
 
 # C-y for autocomplete
