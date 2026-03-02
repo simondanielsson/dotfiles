@@ -85,6 +85,15 @@ else
   ok "delta already installed"
 fi
 
+# ─── uv (Python package manager) ────────────────────────────────────────────
+if ! command_exists uv; then
+  info "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ok "uv installed"
+else
+  ok "uv already installed"
+fi
+
 NVIM_INSTALL_DIR="$HOME/nvim-0.11"
 if [ ! -d "$NVIM_INSTALL_DIR" ]; then
   info "Installing Neovim ${NVIM_VERSION}..."
