@@ -44,7 +44,7 @@ alias pip=pip3
 alias got=git
 # These are nice if installed
 alias cat=bat
-alias ls=eza
+alias ls='eza -l --icons'
 alias getsha='git rev-parse --short HEAD'
 
 ## ensure nvim 0.11 is on PATH:
