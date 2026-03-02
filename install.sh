@@ -3,7 +3,7 @@ set -euo pipefail
 
 DOTFILES_REPO="https://github.com/simondanielsson/dotfiles.git"
 DOTFILES_DIR="$HOME/.config"
-NVIM_VERSION="v0.11.0"
+NVIM_VERSION="v0.11.6"
 NODE_MAJOR=22
 
 # Prevent interactive prompts from apt (e.g. tzdata timezone selection)
