@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ─── Configuration ──────────────────────────────────────────────────────────
+DOTFILES_REPO="https://github.com/simondanielsson/dotfiles.git"
+DOTFILES_DIR="$HOME/.config"
+NVIM_VERSION="v0.11.0"
+NODE_MAJOR=22
+
+# ─── Helpers ────────────────────────────────────────────────────────────────
+info()  { printf '\033[1;34m[INFO]\033[0m  %s\n' "$*"; }
+ok()    { printf '\033[1;32m[OK]\033[0m    %s\n' "$*"; }
+warn()  { printf '\033[1;33m[WARN]\033[0m  %s\n' "$*"; }
+err()   { printf '\033[1;31m[ERR]\033[0m   %s\n' "$*"; }
+
+command_exists() { command -v "$1" &>/dev/null; }
+
+# ─── 1. System packages ────────────────────────────────────────────────────
+info "Updating apt and installing system packages..."
+sudo apt-get update -qq
+sudo apt-get install -y -qq \
+  git curl wget unzip build-essential \
+  zsh tmux \
+  ripgrep fd-find bat fzf \
+  python3 python3-pip python3-venv \
+  cmake gettext \
+  gpg # for eza
+
+if command_exists batcat && ! command_exists bat; then
+  sudo ln -sf "$(which batcat)" /usr/local/bin/bat
+  ok "Symlinked batcat → bat"
+fi
+
+if command_exists fdfind && ! command_exists fd; then
+  sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
+  ok "Symlinked fdfind → fd"
+fi
+
+ok "System packages installed"
+
+# We don't actually need node in most cases, just for some LSPs/nvim pluings
+# if ! command_exists node; then
+#   info "Installing Node.js ${NODE_MAJOR}.x..."
+#   curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | sudo -E bash -
+#   sudo apt-get install -y -qq nodejs
+#   ok "Node.js $(node --version) installed"
+# else
+#   ok "Node.js already installed ($(node --version))"
+# fi
+
+if ! command_exists eza; then
+  info "Installing eza..."
+  sudo mkdir -p /etc/apt/keyrings
+  wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" \
+    | sudo tee /etc/apt/sources.list.d/gierens.list >/dev/null
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq eza
+  ok "eza installed"
+else
+  ok "eza already installed"
+fi
+
+if ! command_exists delta; then
+  info "Installing git-delta..."
+  DELTA_VERSION=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+  DELTA_DEB="git-delta_${DELTA_VERSION}_amd64.deb"
+  wget -q "https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/${DELTA_DEB}" -O "/tmp/${DELTA_DEB}"
+  sudo dpkg -i "/tmp/${DELTA_DEB}"
+  rm -f "/tmp/${DELTA_DEB}"
+  ok "delta ${DELTA_VERSION} installed"
+else
+  ok "delta already installed"
+fi
+
+NVIM_INSTALL_DIR="$HOME/nvim-0.11"
+if [ ! -d "$NVIM_INSTALL_DIR" ]; then
+  info "Installing Neovim ${NVIM_VERSION}..."
+  NVIM_TARBALL="nvim-linux-x86_64.tar.gz"
+  wget -q "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_TARBALL}" -O "/tmp/${NVIM_TARBALL}"
+  mkdir -p "$NVIM_INSTALL_DIR"
+  tar -xzf "/tmp/${NVIM_TARBALL}" --strip-components=1 -C "$NVIM_INSTALL_DIR"
+  rm -f "/tmp/${NVIM_TARBALL}"
+  ok "Neovim installed to ${NVIM_INSTALL_DIR}"
+else
+  ok "Neovim already present at ${NVIM_INSTALL_DIR}"
+fi
+
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+  info "Cloning dotfiles into ${DOTFILES_DIR}..."
+  # Back up existing ~/.config if it exists but isn't the dotfiles repo
+  if [ -d "$DOTFILES_DIR" ]; then
+    warn "${DOTFILES_DIR} exists but is not the dotfiles repo — backing up to ${DOTFILES_DIR}.bak"
+    mv "$DOTFILES_DIR" "${DOTFILES_DIR}.bak"
+  fi
+  git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+  ok "Dotfiles cloned"
+else
+  ok "Dotfiles repo already present at ${DOTFILES_DIR}"
+fi
+
+info "Creating symlinks..."
+symlink() {
+  local src="$1" dst="$2"
+  if [ -L "$dst" ]; then
+    rm "$dst"
+  elif [ -f "$dst" ]; then
+    warn "Backing up existing ${dst} → ${dst}.bak"
+    mv "$dst" "${dst}.bak"
+  fi
+  ln -s "$src" "$dst"
+  ok "  ${dst} → ${src}"
+}
+symlink "$DOTFILES_DIR/.zshrc"     "$HOME/.zshrc"
+symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  info "Installing Oh My Zsh..."
+  RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  ok "Oh My Zsh installed"
+else
+  ok "Oh My Zsh already installed"
+fi
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+# Powerlevel10k
+if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
+  info "Installing Powerlevel10k..."
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
+  ok "Powerlevel10k installed"
+fi
+
+# zsh-autosuggestions
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+  info "Installing zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+  ok "zsh-autosuggestions installed"
+fi
+
+# zsh-bat
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-bat" ]; then
+  info "Installing zsh-bat..."
+  git clone https://github.com/fdellwing/zsh-bat.git "$ZSH_CUSTOM/plugins/zsh-bat"
+  ok "zsh-bat installed"
+fi
+
+# ─── 9. bat theme ──────────────────────────────────────────────────────────
+BAT_THEMES_DIR="$(bat --config-dir 2>/dev/null || echo "$HOME/.config/bat")/themes"
+if [ -f "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" ]; then
+  info "Setting up bat Catppuccin Mocha theme..."
+  mkdir -p "$BAT_THEMES_DIR"
+  cp "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" "$BAT_THEMES_DIR/"
+  bat cache --build 2>/dev/null || true
+  ok "bat theme configured"
+fi
+
+# ─── 10. tmux plugin manager (TPM) ─────────────────────────────────────────
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  info "Installing TPM (Tmux Plugin Manager)..."
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+  ok "TPM installed — press prefix + I inside tmux to install plugins"
+else
+  ok "TPM already installed"
+fi
+
+# ─── 11. Set default shell to zsh ──────────────────────────────────────────
+ZSH_PATH="$(which zsh)"
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+  info "Setting zsh as default shell..."
+  if ! grep -q "$ZSH_PATH" /etc/shells; then
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+  fi
+  sudo chsh -s "$ZSH_PATH" "$(whoami)" 2>/dev/null || chsh -s "$ZSH_PATH" || true
+  ok "Default shell set to zsh (takes effect on next login)"
+else
+  ok "zsh is already the default shell"
+fi
+
+# ─── Done ───────────────────────────────────────────────────────────────────
+echo ""
+info "=========================================="
+info "  Bootstrap complete!"
+info "=========================================="
+echo ""
+info "Post-install steps:"
+info "  1. Log out and back in (or run 'zsh') to start using your new shell"
+info "  2. Run 'p10k configure' to set up the Powerlevel10k prompt"
+info "  3. Open tmux and press C-a + I to install tmux plugins"
+info "  4. Open nvim — Lazy will auto-install plugins on first launch"
+info "  5. Run :MasonInstallAll in nvim to install LSP servers"
+echo ""
+info "Note: .zshenv was NOT symlinked (it contains macOS-specific config)."
+info "If you need pyenv or other PATH entries, add them to ~/.zshenv manually."
+echo ""
