@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ─── Configuration ──────────────────────────────────────────────────────────
 DOTFILES_REPO="https://github.com/simondanielsson/dotfiles.git"
 DOTFILES_DIR="$HOME/.config"
 NVIM_VERSION="v0.11.0"
 NODE_MAJOR=22
+
+# Prevent interactive prompts from apt (e.g. tzdata timezone selection)
+export DEBIAN_FRONTEND=noninteractive
 
 # ─── Helpers ────────────────────────────────────────────────────────────────
 info()  { printf '\033[1;34m[INFO]\033[0m  %s\n' "$*"; }
@@ -15,8 +17,9 @@ err()   { printf '\033[1;31m[ERR]\033[0m   %s\n' "$*"; }
 
 command_exists() { command -v "$1" &>/dev/null; }
 
-# ─── 1. System packages ────────────────────────────────────────────────────
+# System packages
 info "Updating apt and installing system packages..."
+sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
 sudo apt-get update -qq
 sudo apt-get install -y -qq \
   git curl wget unzip build-essential \
@@ -125,7 +128,7 @@ else
 fi
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-# Powerlevel10k
+# Powerlevel10k theme
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   info "Installing Powerlevel10k..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
@@ -146,7 +149,7 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-bat" ]; then
   ok "zsh-bat installed"
 fi
 
-# ─── 9. bat theme ──────────────────────────────────────────────────────────
+# Bat theme
 BAT_THEMES_DIR="$(bat --config-dir 2>/dev/null || echo "$HOME/.config/bat")/themes"
 if [ -f "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" ]; then
   info "Setting up bat Catppuccin Mocha theme..."
@@ -156,7 +159,7 @@ if [ -f "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" ]; then
   ok "bat theme configured"
 fi
 
-# ─── 10. tmux plugin manager (TPM) ─────────────────────────────────────────
+# Tmux plugin manager
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   info "Installing TPM (Tmux Plugin Manager)..."
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
@@ -165,7 +168,7 @@ else
   ok "TPM already installed"
 fi
 
-# ─── 11. Set default shell to zsh ──────────────────────────────────────────
+# Set default shell to zsh
 ZSH_PATH="$(which zsh)"
 if [ "$SHELL" != "$ZSH_PATH" ]; then
   info "Setting zsh as default shell..."
@@ -178,7 +181,6 @@ else
   ok "zsh is already the default shell"
 fi
 
-# ─── Done ───────────────────────────────────────────────────────────────────
 echo ""
 info "=========================================="
 info "  Bootstrap complete!"
