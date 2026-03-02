@@ -164,12 +164,15 @@ fi
 
 # Bat theme
 BAT_THEMES_DIR="$(bat --config-dir 2>/dev/null || echo "$HOME/.config/bat")/themes"
-if [ -f "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" ]; then
-  info "Setting up bat Catppuccin Mocha theme..."
+if [ ! -f "$BAT_THEMES_DIR/Catppuccin Mocha.tmTheme" ]; then
+  info "Downloading bat Catppuccin Mocha theme..."
   mkdir -p "$BAT_THEMES_DIR"
-  cp "$DOTFILES_DIR/bat/themes/Catppuccin Mocha.tmTheme" "$BAT_THEMES_DIR/"
+  wget -q "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme" \
+    -O "$BAT_THEMES_DIR/Catppuccin Mocha.tmTheme"
   bat cache --build 2>/dev/null || true
-  ok "bat theme configured"
+  ok "bat theme installed"
+else
+  ok "bat theme already present"
 fi
 
 # Tmux plugin manager
