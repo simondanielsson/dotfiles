@@ -85,6 +85,21 @@ else
   ok "delta already installed"
 fi
 
+# Nerd fonts
+FONT_DIR="$HOME/.local/share/fonts"
+if ! fc-list 2>/dev/null | grep -qi "Agave"; then
+  info "Installing Agave Nerd Font..."
+  mkdir -p "$FONT_DIR"
+  FONT_ZIP="/tmp/AgaveNerdFont.zip"
+  wget -q "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Agave.zip" -O "$FONT_ZIP"
+  unzip -o -q "$FONT_ZIP" -d "$FONT_DIR"
+  rm -f "$FONT_ZIP"
+  fc-cache -f "$FONT_DIR" 2>/dev/null || true
+  ok "Agave Nerd Font installed"
+else
+  ok "Agave Nerd Font already installed"
+fi
+
 # ─── uv (Python package manager) ────────────────────────────────────────────
 if ! command_exists uv; then
   info "Installing uv..."
