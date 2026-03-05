@@ -346,7 +346,7 @@ return {
       })
       -- Custom command to install all listed binaries
       local ensure_installed = {
-        "debugpy", "black", "mypy", "ruff", "pyrefly",
+        "debugpy", "mypy", "ruff", "pyrefly",
         "gopls",
         "html-lsp", "css-lsp", "cssmodules-language-server",
         "svelte-language-server", "tailwindcss-language-server",
@@ -385,11 +385,22 @@ return {
         }),
       }
 
+      local ruff_format = {
+        name = "ruff_format",
+        method = null_ls.methods.FORMATTING,
+        filetypes = { "python" },
+        generator = helpers.formatter_factory({
+          command = "ruff",
+          args = { "format", "--stdin-filename", "$FILENAME", "-" },
+          to_stdin = true,
+        }),
+      }
+
       null_ls.setup({
         sources = {
           -- Python
-          null_ls.builtins.formatting.black,
           ruff_isort,
+          ruff_format,
           null_ls.builtins.diagnostics.mypy.with({
             extra_args = function()
               local virtual = os.getenv("VIRTUAL_ENV") or os.getenv("CONDA_PREFIX") or "/usr"
@@ -1034,5 +1045,3 @@ return {
     dependencies = { "pangloss/vim-javascript", "othree/html5.vim" },
   },
 }
-
-
