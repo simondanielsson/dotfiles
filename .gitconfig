@@ -49,3 +49,4 @@
   pl=pull
   ps=push
   cp=cherry-pick
+  w=worktree
