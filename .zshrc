@@ -46,6 +46,7 @@ alias got=git
 alias cat=bat
 alias ls='eza -l --icons'
 alias getsha='git rev-parse --short HEAD'
+alias docker=podman
 
 ## ensure nvim 0.11 is on PATH:
 export PATH="$HOME/nvim-0.11/bin:$PATH"
@@ -61,3 +62,6 @@ bindkey '^Y' autosuggest-accept
 vf() {
   vim $(fzf -m)
 }
+
+# Add ~/.local/bin to PATH (for Claude Code)
+export PATH="$HOME/.local/bin:$PATH"
