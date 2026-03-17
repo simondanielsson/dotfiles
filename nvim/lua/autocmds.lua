@@ -67,6 +67,9 @@ autocmd("FileType", {
     vim.opt_local.spell = true
     vim.opt_local.conceallevel = 2
     vim.opt_local.textwidth = 80
+    -- Green for completed checkboxes (treesitter + render-markdown)
+    vim.api.nvim_set_hl(0, "@markup.list.checked", { fg = "#29E68E" })
+    vim.api.nvim_set_hl(0, "RenderMarkdownChecked", { fg = "#29E68E" })
   end,
 })
 
