@@ -4,7 +4,7 @@
   username = simondanielsson
 
 [core]
-  pager = less -FRSX
+  pager = delta
   editor = nvim
 
 [interactive]
