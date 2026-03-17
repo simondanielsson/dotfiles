@@ -52,14 +52,14 @@ fi
 ok "System packages installed"
 
 # We don't actually need node in most cases, just for some LSPs/nvim pluings
-# if ! command_exists node; then
-#   info "Installing Node.js ${NODE_MAJOR}.x..."
-#   curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | sudo -E bash -
-#   sudo apt-get install -y -qq nodejs
-#   ok "Node.js $(node --version) installed"
-# else
-#   ok "Node.js already installed ($(node --version))"
-# fi
+if ! command_exists node; then
+  info "Installing Node.js ${NODE_MAJOR}.x..."
+  curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | sudo -E bash -
+  sudo apt-get install -y -qq nodejs
+  ok "Node.js $(node --version) installed"
+else
+  ok "Node.js already installed ($(node --version))"
+fi
 
 if ! command_exists eza; then
   info "Installing eza..."
