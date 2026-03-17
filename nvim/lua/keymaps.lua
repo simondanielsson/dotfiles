@@ -121,6 +121,25 @@ map("n", "<A-v>", function() require("nvterm.terminal").toggle("vertical") end, 
 map("n", "<leader>h", function() require("nvterm.terminal").new("horizontal") end, { desc = "New horizontal term" })
 map("n", "<leader>v", function() require("nvterm.terminal").new("vertical") end, { desc = "New vertical term" })
 
+-- ── Markdown / notetaking ────────────────────────────────────
+map("n", "<leader>tt", function()
+  local line = vim.api.nvim_get_current_line()
+  local new
+  if line:find("%[x%]") then
+    new = line:gsub("%[x%]", "[ ]", 1)
+    vim.api.nvim_set_current_line(new)
+  elseif line:find("%[ %]") then
+    new = line:gsub("%[ %]", "[x]", 1)
+    vim.api.nvim_set_current_line(new)
+  elseif line:match("^%s*[-*+] ") then
+    new = line:gsub("^(%s*[-*+] )", "%1[ ] ", 1)
+    vim.api.nvim_set_current_line(new)
+  else
+    vim.api.nvim_set_current_line(line .. "- [ ] ")
+    vim.cmd("normal! $")
+    vim.cmd("startinsert!")
+  end
+end, { desc = "Toggle checkbox" })
 -- ── Which-key ────────────────────────────────────────────────
 map("n", "<leader>wK", function() vim.cmd("WhichKey") end, { desc = "Which-key all keymaps" })
 map("n", "<leader>wk", function()

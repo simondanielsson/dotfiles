@@ -1036,6 +1036,13 @@ return {
     opts = { document_color = { kind = "background" } },
   },
 
+  -- Markdown rendering
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    opts = {},
+  },
+
   -- Svelte / HTML / JS
   { "othree/html5.vim", ft = "html" },
   { "pangloss/vim-javascript", ft = "javascript" },
