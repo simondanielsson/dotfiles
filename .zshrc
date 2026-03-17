@@ -44,7 +44,7 @@ alias pip=pip3
 alias got=git
 # These are nice if installed
 alias cat=bat
-alias ls='eza -l --icons'
+alias ls='eza -l --icons=always'
 alias getsha='git rev-parse --short HEAD'
 alias docker=podman
 
@@ -63,5 +63,4 @@ vf() {
   vim $(fzf -m)
 }
 
-# Add ~/.local/bin to PATH (for Claude Code)
 export PATH="$HOME/.local/bin:$PATH"
