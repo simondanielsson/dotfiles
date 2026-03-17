@@ -5,6 +5,23 @@
 local opt = vim.opt
 local g = vim.g
 
+-- WSL clipboard: use wl-clipboard (via WSLg/Wayland) to bridge Windows clipboard inside tmux
+-- sudo apt install wl-clipboard
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = "wl-clipboard",
+    copy = {
+      ["+"] = "wl-copy",
+      ["*"] = "wl-copy",
+    },
+    paste = {
+      ["+"] = { "wl-paste", "--no-newline" },
+      ["*"] = { "wl-paste", "--no-newline" },
+    },
+    cache_enabled = 1,
+  }
+end
+
 -- General
 opt.laststatus = 3          -- global statusline
 opt.showmode = false        -- mode shown in statusline plugin
