@@ -82,7 +82,7 @@ nix_install fd
 nix_install bat
 nix_install fzf
 nix_install eza
-nix_install git-delta delta
+nix_install delta
 nix_install cmake
 nix_install gettext
 nix_install fontconfig fc-cache
