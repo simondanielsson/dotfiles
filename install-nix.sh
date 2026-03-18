@@ -46,8 +46,17 @@ fi
 
 ok "Nix $(nix --version) is active"
 
+# Enable nix-command and flakes (required for `nix profile add`).
+# Writing to ~/.config/nix/nix.conf is user-local and needs no root.
+NIX_CONF="$HOME/.config/nix/nix.conf"
+mkdir -p "$(dirname "$NIX_CONF")"
+if ! grep -q "nix-command" "$NIX_CONF" 2>/dev/null; then
+  echo "experimental-features = nix-command flakes" >> "$NIX_CONF"
+  ok "Enabled nix-command and flakes in ${NIX_CONF}"
+fi
+
 # ─── System packages via nix profile ─────────────────────────────────────────
-# nix profile install installs into ~/.nix-profile (user-local, no root).
+# `nix profile add` installs into ~/.nix-profile (user-local, no root).
 # We install each package only if its binary is not already on PATH.
 
 nix_install() {
@@ -56,7 +65,7 @@ nix_install() {
     ok "${bin} already installed"
   else
     info "Installing ${pkg}..."
-    nix profile install "nixpkgs#${pkg}"
+    nix profile add "nixpkgs#${pkg}"
     ok "${pkg} installed"
   fi
 }
