@@ -46,6 +46,16 @@ fi
 
 ok "Nix $(nix --version) is active"
 
+# Ensure nix is sourced in future zsh sessions.
+# The Nix installer only adds itself to ~/.bash_profile; on clusters where the
+# login shell is zsh (or bash exec's into zsh) ~/.zshenv is the right place.
+NIX_ZSHENV_MARKER="# nix — added by install-nix.sh"
+if ! grep -qF "$NIX_ZSHENV_MARKER" "$HOME/.zshenv" 2>/dev/null; then
+  printf '\n%s\n[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && source "$HOME/.nix-profile/etc/profile.d/nix.sh"\n' \
+    "$NIX_ZSHENV_MARKER" >> "$HOME/.zshenv"
+  ok "Added nix sourcing to ~/.zshenv"
+fi
+
 # Enable nix-command and flakes (required for `nix profile add`).
 # Writing to ~/.config/nix/nix.conf is user-local and needs no root.
 NIX_CONF="$HOME/.config/nix/nix.conf"
@@ -217,22 +227,10 @@ else
 fi
 
 # ─── Default shell ────────────────────────────────────────────────────────────
-# chsh requires root on most clusters. Instead we ensure zsh is launched
-# automatically by prepending an exec to ~/.bash_profile (which most Slurm
-# logins source).
-ZSH_PATH="$(command -v zsh)"
-if [ "$SHELL" != "$ZSH_PATH" ]; then
-  warn "Cannot call chsh without root. Adding zsh auto-launch to ~/.bash_profile instead."
-  MARKER="# added by install-nix.sh"
-  if ! grep -qF "$MARKER" "$HOME/.bash_profile" 2>/dev/null; then
-    printf '\n%s\nexec %s -l\n' "$MARKER" "$ZSH_PATH" >> "$HOME/.bash_profile"
-    ok "zsh auto-launch added to ~/.bash_profile (takes effect on next login)"
-  else
-    ok "zsh auto-launch already present in ~/.bash_profile"
-  fi
-else
-  ok "zsh is already the default shell"
-fi
+# chsh requires root on most clusters.
+# zsh is launched for interactive sessions via `RemoteCommand zsh -l` in the
+# local ~/.ssh/config — no changes to the login shell are needed here.
+info "Default shell: bash (login shell unchanged — zsh launched via SSH RemoteCommand)"
 
 echo ""
 info "=========================================="
@@ -240,7 +238,7 @@ info "  Bootstrap complete!"
 info "=========================================="
 echo ""
 info "Post-install steps:"
-info "  1. Log out and back in (or run 'exec zsh') to start using zsh"
+info "  1. Ensure your local ~/.ssh/config has RequestTTY+RemoteCommand for cluster hosts"
 info "  2. Open tmux and press C-a + I to install tmux plugins"
 info "  3. Open nvim — Lazy will auto-install plugins on first launch"
 info "  4. Run :MasonInstallAll in nvim to install LSP servers"
