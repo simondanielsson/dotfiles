@@ -46,14 +46,22 @@ fi
 
 ok "Nix $(nix --version) is active"
 
-# Ensure nix is sourced in future zsh sessions.
-# The Nix installer only adds itself to ~/.bash_profile; on clusters where the
-# login shell is zsh (or bash exec's into zsh) ~/.zshenv is the right place.
-NIX_ZSHENV_MARKER="# nix — added by install-nix.sh"
-if ! grep -qF "$NIX_ZSHENV_MARKER" "$HOME/.zshenv" 2>/dev/null; then
-  printf '\n%s\n[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && source "$HOME/.nix-profile/etc/profile.d/nix.sh"\n' \
-    "$NIX_ZSHENV_MARKER" >> "$HOME/.zshenv"
+# Ensure nix is on PATH in all shell types:
+#   ~/.zshenv  — all zsh sessions (login, interactive, scripts)
+#   ~/.bashrc  — interactive non-login bash shells (new tmux windows)
+# The nix installer already adds itself to ~/.bash_profile (login bash), so
+# we don't touch that file.
+NIX_SOURCE='[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && source "$HOME/.nix-profile/etc/profile.d/nix.sh"'
+NIX_MARKER="# nix — added by install-nix.sh"
+
+if ! grep -qF "$NIX_MARKER" "$HOME/.zshenv" 2>/dev/null; then
+  printf '\n%s\n%s\n' "$NIX_MARKER" "$NIX_SOURCE" >> "$HOME/.zshenv"
   ok "Added nix sourcing to ~/.zshenv"
+fi
+
+if ! grep -qF "$NIX_MARKER" "$HOME/.bashrc" 2>/dev/null; then
+  printf '\n%s\n%s\n' "$NIX_MARKER" "$NIX_SOURCE" >> "$HOME/.bashrc"
+  ok "Added nix sourcing to ~/.bashrc"
 fi
 
 # Disable zsh compaudit on clusters where LDAP/NIS groups are not locally
@@ -234,34 +242,11 @@ else
   ok "TPM already installed"
 fi
 
-# ─── tmux local overrides ─────────────────────────────────────────────────────
-# New tmux windows use $SHELL (bash on most clusters). Tell tmux to use the
-# nix-installed zsh instead via a local override file that is NOT part of the
-# shared dotfiles repo.
-TMUX_LOCAL="$HOME/.tmux.conf.local"
-# Use the explicit nix profile path — $PATH may not include nix when this
-# block runs in a bash-spawned subshell (e.g. new tmux window).
-ZSH_PATH="$HOME/.nix-profile/bin/zsh"
-TMUX_MARKER="# added by install-nix.sh"
-if ! grep -qF "$TMUX_MARKER" "$TMUX_LOCAL" 2>/dev/null; then
-  printf '%s\nset -g default-shell %s\nset -g default-command %s\n' \
-    "$TMUX_MARKER" "$ZSH_PATH" "$ZSH_PATH" > "$TMUX_LOCAL"
-  ok "Created ${TMUX_LOCAL} with default-shell ${ZSH_PATH}"
-fi
-
-# Append a source-file line to ~/.tmux.conf if not already there.
-# (The symlinked .tmux.conf is modified locally; the repo copy is untouched.)
-TMUX_CONF="$HOME/.tmux.conf"
-if ! grep -qF ".tmux.conf.local" "$TMUX_CONF" 2>/dev/null; then
-  printf '\n%s\nsource-file -q ~/.tmux.conf.local\n' "$TMUX_MARKER" >> "$TMUX_CONF"
-  ok "Added ~/.tmux.conf.local source to ~/.tmux.conf"
-fi
-
 # ─── Default shell ────────────────────────────────────────────────────────────
-# chsh requires root on most clusters.
-# zsh is launched for interactive sessions via `RemoteCommand zsh -l` in the
-# local ~/.ssh/config — no changes to the login shell are needed here.
-info "Default shell: bash (login shell unchanged — zsh launched via SSH RemoteCommand)"
+# The login shell stays as bash — no chsh needed.
+# For interactive SSH sessions, zsh is launched via RemoteCommand in the
+# local ~/.ssh/config. For new tmux windows (non-login bash), nix is on PATH
+# via ~/.bashrc so `zsh` can be run manually.
 
 echo ""
 info "=========================================="
