@@ -56,6 +56,14 @@ if ! grep -qF "$NIX_ZSHENV_MARKER" "$HOME/.zshenv" 2>/dev/null; then
   ok "Added nix sourcing to ~/.zshenv"
 fi
 
+# Disable zsh compaudit on clusters where LDAP/NIS groups are not locally
+# resolvable — prevents "unknown group" noise that triggers the p10k warning.
+# Must be set before Oh My Zsh loads, so ~/.zshenv is the right place.
+if ! grep -q "ZSH_DISABLE_COMPFIX" "$HOME/.zshenv" 2>/dev/null; then
+  echo 'ZSH_DISABLE_COMPFIX=true' >> "$HOME/.zshenv"
+  ok "Set ZSH_DISABLE_COMPFIX=true in ~/.zshenv"
+fi
+
 # Enable nix-command and flakes (required for `nix profile add`).
 # Writing to ~/.config/nix/nix.conf is user-local and needs no root.
 NIX_CONF="$HOME/.config/nix/nix.conf"
