@@ -71,7 +71,7 @@ fi
 # ─── Spack environment ───────────────────────────────────────────────────────
 # Use a named Spack environment so all tools are grouped and easy to rebuild.
 # Spack manages the environment in ~/.spack/environments/dotfiles (no path arg needed).
-if ! spack env list 2>/dev/null | grep -q "^dotfiles$"; then
+if ! spack env list 2>/dev/null | grep -qE '^\s*dotfiles\s*$'; then
   info "Creating Spack environment 'dotfiles'..."
   spack env create dotfiles
   ok "Spack environment 'dotfiles' created"
