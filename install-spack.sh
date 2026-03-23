@@ -118,7 +118,7 @@ spack_add "fd"
 spack_add "bat"
 spack_add "fzf"
 spack_add "eza"            "eza"      # may not be in all spack mirrors; fallback below
-spack_add "git-delta"      "delta"
+spack_add "delta"
 spack_add "cmake"
 spack_add "gettext"
 spack_add "fontconfig"     "fc-cache"
