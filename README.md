@@ -16,15 +16,41 @@ source $HOME/.local/bin/env
 
 Use `install-nix.sh` on shared nodes where you don't have root. It installs
 everything into `~/.nix-profile` and `~/.local` — no system-wide changes.
+Requires a writable `/nix` directory (ask your sysadmin or check if it already
+exists as a shared store on your cluster).
 
 ```bash
 # Requires curl and git (pre-installed on most clusters)
 curl -fsSL https://raw.githubusercontent.com/simondanielsson/dotfiles/main/install-nix.sh | bash
 ```
 
-After the script completes, configure your **local** `~/.ssh/config` to launch
-zsh automatically for interactive sessions (avoids needing to change the login
-shell on the cluster):
+## Notes
+
+- Nix is sourced for all zsh sessions via `~/.zshenv` (written by the script).
+- To garbage-collect old Nix generations: `nix profile wipe-history --older-than 7d && nix store gc`
+
+# Bootstrap without sudo (Lustre/HPC clusters, via Spack)
+
+Use `install-spack.sh` on clusters where `/nix` is unavailable or not writable
+(e.g. Lustre-based HPC systems). Spack is cloned entirely into your home
+directory — no root, no `/nix` required.
+
+```bash
+# Requires curl (or wget) and git (pre-installed on most clusters)
+curl -fsSL https://raw.githubusercontent.com/simondanielsson/dotfiles/main/install-spack.sh | bash
+```
+
+Spack builds from source by default, so the first run can be slow. If your
+cluster already has a shared Spack installation, you can reuse its pre-built
+packages by adding it as an upstream before running the script:
+
+```bash
+spack mirror add cluster-upstream /path/to/cluster/spack/mirror
+```
+
+After either no-sudo script completes, configure your **local** `~/.ssh/config`
+to launch zsh automatically for interactive sessions (avoids needing to change
+the login shell on the cluster):
 
 ```
 Host my_cluster
@@ -37,5 +63,7 @@ Then reconnect and you'll drop straight into zsh with all tools available.
 
 ## Notes
 
-- Nix is sourced for all zsh sessions via `~/.zshenv` (written by the script).
-- To garbage-collect old Nix generations: `nix profile wipe-history --older-than 7d && nix store gc`
+- Spack and `~/.local/bin` are added to PATH via `~/.zshenv` and `~/.bashrc`.
+- To activate the tool environment manually: `spack env activate dotfiles`
+- To add a new package: `spack add <pkg> && spack install`
+- To garbage-collect old Spack builds: `spack gc`
