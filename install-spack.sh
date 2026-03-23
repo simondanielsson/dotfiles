@@ -55,6 +55,7 @@ SPACK_SOURCE="source \"${SPACK_DIR}/share/spack/setup-env.sh\""
 SPACK_MARKER="# spack — added by install-spack.sh"
 
 for RC in "$HOME/.zshenv" "$HOME/.bashrc"; do
+  touch "$RC" 2>/dev/null || { warn "Cannot create ${RC} — skipping"; continue; }
   if ! grep -qF "$SPACK_MARKER" "$RC" 2>/dev/null; then
     printf '\n%s\n%s\n' "$SPACK_MARKER" "$SPACK_SOURCE" >> "$RC"
     ok "Added spack sourcing to ${RC}"
@@ -62,6 +63,7 @@ for RC in "$HOME/.zshenv" "$HOME/.bashrc"; do
 done
 
 # Disable zsh compaudit on clusters (LDAP/NIS groups may not be resolvable)
+touch "$HOME/.zshenv" 2>/dev/null || true
 if ! grep -q "ZSH_DISABLE_COMPFIX" "$HOME/.zshenv" 2>/dev/null; then
   echo 'ZSH_DISABLE_COMPFIX=true' >> "$HOME/.zshenv"
   ok "Set ZSH_DISABLE_COMPFIX=true in ~/.zshenv"
@@ -177,6 +179,7 @@ fi
 LOCAL_BIN_SOURCE='export PATH="$HOME/.local/bin:$PATH"'
 LOCAL_BIN_MARKER="# local bin — added by install-spack.sh"
 for RC in "$HOME/.zshenv" "$HOME/.bashrc"; do
+  touch "$RC" 2>/dev/null || { warn "Cannot create ${RC} — skipping"; continue; }
   if ! grep -qF "$LOCAL_BIN_MARKER" "$RC" 2>/dev/null; then
     printf '\n%s\n%s\n' "$LOCAL_BIN_MARKER" "$LOCAL_BIN_SOURCE" >> "$RC"
     ok "Added ~/.local/bin to PATH in ${RC}"
