@@ -81,11 +81,27 @@ fi
 
 spack env activate dotfiles
 
-# Detect system compilers so Spack writes clean compiler config entries.
-# Must happen before concretize — avoids a Spack 0.23 bug where the auto-detected
-# gcc entry includes a 'languages:=' variant that the spec parser then rejects.
+# Detect system compilers so Spack can build packages.
 info "Detecting system compilers..."
-spack compiler find 2>&1 | grep -v "^$" || true
+spack compiler find 2>/dev/null || true
+
+# Spack 0.23 bug: the auto-detected gcc entry includes a 'languages:' field
+# (e.g. "languages: 'c,c++,fortran'") that the spec parser then rejects with
+# "a single spec was requested, but parsed more than one".
+# Fix: strip every 'languages:' line from compilers.yaml before concretizing.
+COMPILERS_YAML="$HOME/.spack/linux/compilers.yaml"
+if [ -f "$COMPILERS_YAML" ]; then
+  python3 - <<'EOF'
+import re, sys
+path = __import__('os').path.expanduser('~/.spack/linux/compilers.yaml')
+with open(path) as f:
+    content = f.read()
+patched = re.sub(r'[ \t]*languages:.*\n', '', content)
+with open(path, 'w') as f:
+    f.write(patched)
+EOF
+  ok "Patched compilers.yaml (stripped 'languages:' entries — Spack 0.23 bug)"
+fi
 
 # ─── Concretize & install packages ───────────────────────────────────────────
 # spack_add installs a package only if its binary is not already on PATH.
