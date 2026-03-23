@@ -81,27 +81,16 @@ fi
 
 spack env activate dotfiles
 
-# Spack 0.23 bug: compilers.yaml gets a 'languages:' field that the spec parser
-# rejects ("a single spec was requested, but parsed more than one").
-# Strip it before AND after spack compiler find — before fixes stale bad entries
-# (which would make compiler find fail to read the file), after fixes freshly
-# written bad entries.
-_patch_compilers_yaml() {
-  local yaml="$HOME/.spack/linux/compilers.yaml"
-  [ -f "$yaml" ] || return 0
-  python3 -c "
-import re, os
-p = os.path.expanduser('~/.spack/linux/compilers.yaml')
-with open(p) as f: c = f.read()
-with open(p, 'w') as f: f.write(re.sub(r'[ \t]*languages:.*\n', '', c))
-"
-}
-
-info "Detecting system compilers..."
-_patch_compilers_yaml          # fix any pre-existing bad entries first
-spack compiler find 2>/dev/null || true
-_patch_compilers_yaml          # fix any bad entries just written by compiler find
-ok "Compiler config ready"
+# Skip 'spack compiler find' — it has a bug in Spack 0.23 where the auto-detected
+# gcc entry gets a 'languages:=' variant that the spec parser rejects.
+# Spack will find compilers on $PATH automatically at concretize time.
+# Delete any stale compilers.yaml that may have bad entries from a prior run.
+COMPILERS_YAML="$HOME/.spack/linux/compilers.yaml"
+if [ -f "$COMPILERS_YAML" ] && grep -q "languages:" "$COMPILERS_YAML" 2>/dev/null; then
+  warn "Removing stale compilers.yaml with bad 'languages:' entries (Spack 0.23 bug)..."
+  rm -f "$COMPILERS_YAML"
+  ok "Removed stale compilers.yaml — Spack will re-detect compilers at install time"
+fi
 
 # ─── Concretize & install packages ───────────────────────────────────────────
 # spack_add installs a package only if its binary is not already on PATH.
