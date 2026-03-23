@@ -9,7 +9,6 @@ DOTFILES_DIR="$HOME/.config"
 NVIM_VERSION="v0.11.6"
 NODE_MAJOR=22
 SPACK_DIR="$HOME/.spack-install"
-SPACK_ENV_DIR="$HOME/.spack-env"
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 info()  { printf '\033[1;34m[INFO]\033[0m  %s\n' "$*"; }
@@ -71,10 +70,10 @@ fi
 
 # ─── Spack environment ───────────────────────────────────────────────────────
 # Use a named Spack environment so all tools are grouped and easy to rebuild.
-# The environment lives in ~/.spack-env (user-local, no root required).
+# Spack manages the environment in ~/.spack/environments/dotfiles (no path arg needed).
 if ! spack env list 2>/dev/null | grep -q "^dotfiles$"; then
   info "Creating Spack environment 'dotfiles'..."
-  spack env create dotfiles "$SPACK_ENV_DIR"
+  spack env create dotfiles
   ok "Spack environment 'dotfiles' created"
 else
   ok "Spack environment 'dotfiles' already exists"
@@ -123,7 +122,6 @@ spack_add "node-js@${NODE_MAJOR}" "node"
 info "Concretizing and installing Spack environment (this may take a while on first run)..."
 spack concretize --force 2>&1 | tail -5   # show last few lines; full log written to spack.lock
 spack install --fail-fast 2>&1 | grep -E '^\[|^==> |^Error' || true
-spack env loads > "$SPACK_ENV_DIR/loads.sh"
 ok "Spack packages installed"
 
 # Some tools may not yet be in every Spack mirror; fall back to pre-built binaries.
