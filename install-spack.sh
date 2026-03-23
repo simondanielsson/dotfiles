@@ -81,6 +81,12 @@ fi
 
 spack env activate dotfiles
 
+# Detect system compilers so Spack writes clean compiler config entries.
+# Must happen before concretize — avoids a Spack 0.23 bug where the auto-detected
+# gcc entry includes a 'languages:=' variant that the spec parser then rejects.
+info "Detecting system compilers..."
+spack compiler find 2>&1 | grep -v "^$" || true
+
 # ─── Concretize & install packages ───────────────────────────────────────────
 # spack_add installs a package only if its binary is not already on PATH.
 spack_add() {
@@ -120,7 +126,7 @@ spack_add "python"         "python3"
 spack_add "node-js@${NODE_MAJOR}" "node"
 
 info "Concretizing and installing Spack environment (this may take a while on first run)..."
-spack concretize --force 2>&1 | tail -5   # show last few lines; full log written to spack.lock
+spack concretize 2>&1 | tail -5
 spack install --fail-fast 2>&1 | grep -E '^\[|^==> |^Error' || true
 ok "Spack packages installed"
 
