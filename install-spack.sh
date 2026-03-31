@@ -115,6 +115,23 @@ else
   ok "compilers.yaml already clean"
 fi
 
+# Spack v1.0 requires a concrete Fortran compiler for any package that pulls in
+# a Fortran dependency. If gfortran is absent (common on GPU-only nodes) the
+# concretizer fails with "Only external, or concrete, compilers are allowed for
+# the fortran language." Setting unify:when_possible lets the concretizer fall
+# back gracefully instead of hard-failing.
+CONCRETIZER_YAML="$HOME/.spack/concretizer.yaml"
+if [ ! -f "$CONCRETIZER_YAML" ]; then
+  info "Writing concretizer.yaml (unify: when_possible for nodes without gfortran)..."
+  cat > "$CONCRETIZER_YAML" << YAML
+concretizer:
+  unify: when_possible
+YAML
+  ok "concretizer.yaml written"
+else
+  ok "concretizer.yaml already present"
+fi
+
 # ─── Concretize & install packages ───────────────────────────────────────────
 # spack_add installs a package only if its binary is not already on PATH.
 spack_add() {
