@@ -43,8 +43,8 @@ alias python=python3
 alias pip=pip3
 alias got=git
 # These are nice if installed
-alias cat=bat
-alias ls='eza -l --icons=always'
+command -v bat &>/dev/null && alias cat=bat
+command -v eza &>/dev/null && alias ls='eza -l --icons=always'
 alias getsha='git rev-parse --short HEAD'
 alias docker=podman
 

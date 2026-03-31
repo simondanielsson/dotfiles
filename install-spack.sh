@@ -189,7 +189,6 @@ spack_add "tmux"
 spack_add "ripgrep"        "rg"
 spack_add "fd"
 spack_add "fzf"
-spack_add "eza"            "eza"      # may not be in all spack mirrors; fallback below
 spack_add "delta"
 spack_add "cmake"
 spack_add "gettext"
@@ -202,28 +201,6 @@ spack concretize 2>&1 | tail -5
 spack install --fail-fast 2>&1 | grep -E '^\[|^==> |^Error' || true
 ok "Spack packages installed"
 
-# Some tools may not yet be in every Spack mirror, or have problematic deps on
-# gfortran-less nodes (bat). Fall back to pre-built static binaries.
-if ! command_exists bat; then
-  warn "bat not available via Spack — downloading pre-built binary..."
-  BAT_TMP="/tmp/bat.tar.gz"
-  fetch "https://github.com/sharkdp/bat/releases/latest/download/bat-v0.25.0-${ARCH}-unknown-linux-musl.tar.gz" "$BAT_TMP"
-  mkdir -p "$HOME/.local/bin"
-  tar -xzf "$BAT_TMP" --strip-components=1 -C "$HOME/.local/bin" --wildcards "*/bat"
-  rm -f "$BAT_TMP"
-  ok "bat installed to ~/.local/bin"
-fi
-
-if ! command_exists eza; then
-  warn "eza not available via Spack — downloading pre-built binary..."
-  EZA_URL="https://github.com/eza-community/eza/releases/latest/download/eza_${ARCH}-unknown-linux-musl.tar.gz"
-  EZA_TMP="/tmp/eza.tar.gz"
-  fetch "$EZA_URL" "$EZA_TMP"
-  mkdir -p "$HOME/.local/bin"
-  tar -xzf "$EZA_TMP" -C "$HOME/.local/bin" eza
-  rm -f "$EZA_TMP"
-  ok "eza installed to ~/.local/bin"
-fi
 
 # ─── uv (Python package manager) ─────────────────────────────────────────────
 if ! command_exists uv; then
