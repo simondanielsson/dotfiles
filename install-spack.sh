@@ -90,9 +90,15 @@ mkdir -p "$(dirname "$COMPILERS_YAML")"
 if [ ! -f "$COMPILERS_YAML" ] || grep -q "languages:" "$COMPILERS_YAML" 2>/dev/null; then
   info "Writing clean compilers.yaml (bypassing Spack 0.23 compiler-detection bug)..."
   GCC_VERSION=$(gcc --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  GCC_MAJOR=$(echo "$GCC_VERSION" | cut -d. -f1)
   GCC_PATH=$(command -v gcc || echo null)
   GXX_PATH=$(command -v g++ 2>/dev/null || echo null)
-  GFORT_PATH=$(command -v gfortran 2>/dev/null || echo null)
+  # Try plain gfortran first, then versioned variants matching gcc major version,
+  # then any gfortran in /usr/bin (common on Ubuntu where gcc-11 ships gfortran-11).
+  GFORT_PATH=$(command -v gfortran 2>/dev/null \
+    || command -v "gfortran-${GCC_MAJOR}" 2>/dev/null \
+    || ls /usr/bin/gfortran-* 2>/dev/null | sort -V | tail -1 \
+    || echo null)
   SPACK_OS=$(spack arch --operating-system 2>/dev/null || echo linux-unknown)
   cat > "$COMPILERS_YAML" << YAML
 compilers:
@@ -118,18 +124,28 @@ fi
 # Spack v1.0 requires a concrete Fortran compiler for any package that pulls in
 # a Fortran dependency. If gfortran is absent (common on GPU-only nodes) the
 # concretizer fails with "Only external, or concrete, compilers are allowed for
-# the fortran language." Setting unify:when_possible lets the concretizer fall
-# back gracefully instead of hard-failing.
+# the fortran language."
+# With Fortran present: unify:true is fine (strict, best).
+# Without Fortran: unify:false tells the concretizer to allow per-package
+# concretization contexts so it can route around Fortran-requiring deps.
+# (when_possible is not sufficient — it still enforces Fortran concreteness.)
 CONCRETIZER_YAML="$HOME/.spack/concretizer.yaml"
-if [ ! -f "$CONCRETIZER_YAML" ]; then
-  info "Writing concretizer.yaml (unify: when_possible for nodes without gfortran)..."
+if [ "$GFORT_PATH" = "null" ]; then
+  UNIFY_VALUE="false"
+  warn "gfortran not found — setting concretizer:unify to false to avoid Fortran compiler errors"
+else
+  UNIFY_VALUE="when_possible"
+  ok "gfortran found at ${GFORT_PATH} — setting concretizer:unify to when_possible"
+fi
+if [ ! -f "$CONCRETIZER_YAML" ] || ! grep -q "unify: ${UNIFY_VALUE}" "$CONCRETIZER_YAML" 2>/dev/null; then
+  info "Writing concretizer.yaml (unify: ${UNIFY_VALUE})..."
   cat > "$CONCRETIZER_YAML" << YAML
 concretizer:
-  unify: when_possible
+  unify: ${UNIFY_VALUE}
 YAML
   ok "concretizer.yaml written"
 else
-  ok "concretizer.yaml already present"
+  ok "concretizer.yaml already correct"
 fi
 
 # ─── Concretize & install packages ───────────────────────────────────────────
