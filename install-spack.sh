@@ -125,6 +125,14 @@ else
   ok "compilers.yaml already clean"
 fi
 
+# Spack v1.0 requires compilers to also be registered as external *packages*
+# (packages.yaml), not just listed in compilers.yaml. Without this the
+# concretizer rejects null-Fortran compilers with "Only external, or concrete,
+# compilers are allowed for the fortran language."
+info "Registering system gcc as external package (spack v1.0 requirement)..."
+spack external find --not-buildable gcc 2>&1 | grep -v "^$" || true
+ok "gcc registered as external"
+
 # Spack v1.0 requires a concrete Fortran compiler for any package that pulls in
 # a Fortran dependency. If gfortran is absent (common on GPU-only nodes) the
 # concretizer fails with "Only external, or concrete, compilers are allowed for
@@ -180,7 +188,6 @@ spack_add "zsh"
 spack_add "tmux"
 spack_add "ripgrep"        "rg"
 spack_add "fd"
-spack_add "bat"
 spack_add "fzf"
 spack_add "eza"            "eza"      # may not be in all spack mirrors; fallback below
 spack_add "delta"
@@ -195,7 +202,18 @@ spack concretize 2>&1 | tail -5
 spack install --fail-fast 2>&1 | grep -E '^\[|^==> |^Error' || true
 ok "Spack packages installed"
 
-# Some tools may not yet be in every Spack mirror; fall back to pre-built binaries.
+# Some tools may not yet be in every Spack mirror, or have problematic deps on
+# gfortran-less nodes (bat). Fall back to pre-built static binaries.
+if ! command_exists bat; then
+  warn "bat not available via Spack — downloading pre-built binary..."
+  BAT_TMP="/tmp/bat.tar.gz"
+  fetch "https://github.com/sharkdp/bat/releases/latest/download/bat-v0.25.0-${ARCH}-unknown-linux-musl.tar.gz" "$BAT_TMP"
+  mkdir -p "$HOME/.local/bin"
+  tar -xzf "$BAT_TMP" --strip-components=1 -C "$HOME/.local/bin" --wildcards "*/bat"
+  rm -f "$BAT_TMP"
+  ok "bat installed to ~/.local/bin"
+fi
+
 if ! command_exists eza; then
   warn "eza not available via Spack — downloading pre-built binary..."
   EZA_URL="https://github.com/eza-community/eza/releases/latest/download/eza_${ARCH}-unknown-linux-musl.tar.gz"
