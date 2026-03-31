@@ -87,18 +87,22 @@ spack env activate dotfiles
 # ourselves — no 'languages:' field, no auto-detection.
 COMPILERS_YAML="$HOME/.spack/linux/compilers.yaml"
 mkdir -p "$(dirname "$COMPILERS_YAML")"
+
+# Detect gfortran here (outside the if-block) so it's always available for the
+# concretizer section below, even when compilers.yaml is already up to date.
+GCC_VERSION=$(gcc --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+GCC_MAJOR=$(echo "$GCC_VERSION" | cut -d. -f1)
+GCC_PATH=$(command -v gcc || echo null)
+GXX_PATH=$(command -v g++ 2>/dev/null || echo null)
+# Try plain gfortran first, then versioned variants matching gcc major version,
+# then any gfortran in /usr/bin (common on Ubuntu where gcc-11 ships gfortran-11).
+GFORT_PATH=$(command -v gfortran 2>/dev/null \
+  || command -v "gfortran-${GCC_MAJOR}" 2>/dev/null \
+  || ls /usr/bin/gfortran-* 2>/dev/null | sort -V | tail -1 \
+  || echo null)
+
 if [ ! -f "$COMPILERS_YAML" ] || grep -q "languages:" "$COMPILERS_YAML" 2>/dev/null; then
   info "Writing clean compilers.yaml (bypassing Spack 0.23 compiler-detection bug)..."
-  GCC_VERSION=$(gcc --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-  GCC_MAJOR=$(echo "$GCC_VERSION" | cut -d. -f1)
-  GCC_PATH=$(command -v gcc || echo null)
-  GXX_PATH=$(command -v g++ 2>/dev/null || echo null)
-  # Try plain gfortran first, then versioned variants matching gcc major version,
-  # then any gfortran in /usr/bin (common on Ubuntu where gcc-11 ships gfortran-11).
-  GFORT_PATH=$(command -v gfortran 2>/dev/null \
-    || command -v "gfortran-${GCC_MAJOR}" 2>/dev/null \
-    || ls /usr/bin/gfortran-* 2>/dev/null | sort -V | tail -1 \
-    || echo null)
   SPACK_OS=$(spack arch --operating-system 2>/dev/null || echo linux-unknown)
   cat > "$COMPILERS_YAML" << YAML
 compilers:
