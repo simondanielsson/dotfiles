@@ -81,15 +81,38 @@ fi
 
 spack env activate dotfiles
 
-# Skip 'spack compiler find' — it has a bug in Spack 0.23 where the auto-detected
-# gcc entry gets a 'languages:=' variant that the spec parser rejects.
-# Spack will find compilers on $PATH automatically at concretize time.
-# Delete any stale compilers.yaml that may have bad entries from a prior run.
+# Spack 0.23 bug: 'spack compiler find' (and concretize's internal compiler
+# detection) writes a 'languages:=' variant into compilers.yaml that the spec
+# parser then rejects. Work around by writing a minimal, clean compilers.yaml
+# ourselves — no 'languages:' field, no auto-detection.
 COMPILERS_YAML="$HOME/.spack/linux/compilers.yaml"
-if [ -f "$COMPILERS_YAML" ] && grep -q "languages:" "$COMPILERS_YAML" 2>/dev/null; then
-  warn "Removing stale compilers.yaml with bad 'languages:' entries (Spack 0.23 bug)..."
-  rm -f "$COMPILERS_YAML"
-  ok "Removed stale compilers.yaml — Spack will re-detect compilers at install time"
+mkdir -p "$(dirname "$COMPILERS_YAML")"
+if [ ! -f "$COMPILERS_YAML" ] || grep -q "languages:" "$COMPILERS_YAML" 2>/dev/null; then
+  info "Writing clean compilers.yaml (bypassing Spack 0.23 compiler-detection bug)..."
+  GCC_VERSION=$(gcc --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  GCC_PATH=$(command -v gcc || echo null)
+  GXX_PATH=$(command -v g++ 2>/dev/null || echo null)
+  GFORT_PATH=$(command -v gfortran 2>/dev/null || echo null)
+  SPACK_OS=$(spack arch --operating-system 2>/dev/null || echo linux-unknown)
+  cat > "$COMPILERS_YAML" << YAML
+compilers:
+- compiler:
+    spec: gcc@=${GCC_VERSION}
+    paths:
+      cc: ${GCC_PATH}
+      cxx: ${GXX_PATH}
+      f77: ${GFORT_PATH}
+      fc: ${GFORT_PATH}
+    flags: {}
+    operating_system: ${SPACK_OS}
+    target: x86_64
+    modules: []
+    environment: {}
+    extra_rpaths: []
+YAML
+  ok "compilers.yaml written (gcc@${GCC_VERSION})"
+else
+  ok "compilers.yaml already clean"
 fi
 
 # ─── Concretize & install packages ───────────────────────────────────────────
