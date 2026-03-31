@@ -39,7 +39,7 @@ esac
 # ─── Spack ───────────────────────────────────────────────────────────────────
 if [ ! -d "$SPACK_DIR" ]; then
   info "Cloning Spack into ${SPACK_DIR}..."
-  git clone --depth=1 --branch=releases/v0.23 https://github.com/spack/spack.git "$SPACK_DIR"
+  git clone --depth=1 --branch=v1.0.4 https://github.com/spack/spack.git "$SPACK_DIR"
   ok "Spack cloned"
 else
   ok "Spack already present at ${SPACK_DIR}"
