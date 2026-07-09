@@ -46,7 +46,6 @@ alias got=git
 command -v bat &>/dev/null && alias cat=bat
 command -v eza &>/dev/null && alias ls='eza -l --icons=always'
 alias getsha='git rev-parse --short HEAD'
-alias docker=podman
 
 ## ensure nvim 0.11 is on PATH:
 export PATH="$HOME/nvim-0.11/bin:$PATH"
